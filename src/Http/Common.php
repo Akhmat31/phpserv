@@ -1,8 +1,8 @@
 <?php
 
-namespace Phxroute\Http;
+namespace Source\Http;
 
-use Phxroute\Http\Method\HttpMethod;
+use Source\Http\Method\HttpMethod;
 
 class Common
 {

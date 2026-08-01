@@ -1,12 +1,9 @@
 {
     "name": "phxplugins/databaseutils",
-    "require": {
-        "php": "^8.4"
-    },
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "PhxPlugins\\Databaseutils\\": "src/"
+            "PhxPlugins\\Databaseutils\\": "PhxDatabaseUtils/src/"
         }
     }
 }

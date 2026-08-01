@@ -155,26 +155,33 @@ class Route
     }
 
     /**
-     * Convert route path to regex pattern with constraints
+     * Convert route path to FastRoute-compatible pattern with constraints
      */
     public function getCompiledPath(): string
     {
         $path = $this->path;
-        
-        // Replace {param} with regex patterns based on constraints
-        $path = preg_replace_callback('/\{(\w+)(\?)?\}/', function($matches) {
-            $param = $matches[1];
-            $optional = isset($matches[2]);
-            
-            $pattern = $this->wheres[$param] ?? '[^/]+';
-            
-            if ($optional) {
-                return "(?:/({$pattern}))?";
-            }
-            
-            return "({$pattern})";
-        }, $path);
-        
+
+        // FastRoute supports inline patterns as {name:pattern}. Optional
+        // segments use the bracket syntax [/{name}] — the leading slash must
+        // be inside the brackets so the segment can be omitted entirely.
+        $path = preg_replace_callback(
+            '#(/?)\{(\w+)(\?)?\}#',
+            function ($matches) {
+                $slash = $matches[1];
+                $param = $matches[2];
+                $optional = isset($matches[3]);
+
+                $pattern = $this->wheres[$param] ?? '[^/]+';
+
+                if ($optional) {
+                    return "[{$slash}{{$param}:{$pattern}}]";
+                }
+
+                return "{$slash}{{$param}:{$pattern}}";
+            },
+            $path
+        );
+
         return $path;
     }
 
