@@ -1,11 +1,12 @@
 <?php
 namespace Routes;
 
+use Source\Http\Request;
 use Source\Http\Response\Response;
 use Source\Http\Routing\Router;
 use PhxPlugins;
 
-define ("RESOURCES", __DIR__ . '/../resources/views/');
+define("RESOURCES", __DIR__ . '/../resources/views/');
 
 /**
  * The default router defined structures is using 
@@ -20,5 +21,17 @@ return function (Router $router): void {
     $router->get('/', function () {
         return Response::view(RESOURCES . "index.php");
     });
-    //require_once "external.php";
+    $router->get('/csrf-test', function () {
+        $csrf = PhxPlugins::initXcsrfToken();
+        return Response::view(RESOURCES . "form.php", ["csrf" => $csrf]);
+    });
+    $router->post("/csrf-test/process/", function (Request $request) {
+        $data = $request->name("nama");
+        $csrf = PhxPlugins::initXcsrfSession();        
+        if (!$csrf->verifyRequest('contact_form')) {
+            http_response_code(419);
+            die('Invalid token, please try again');
+        }
+        echo "Halo, ".$data;
+    });
 };
