@@ -3,7 +3,7 @@
 namespace Source;
 
 use Source\Http\Routing\Router;
-//use Phxroute\Http\Routing\Route;
+use Source\Http\Routing\Route;
 use Source\Http\Request;
 use Source\Http\Response\Response;
 use Source\Http\Response\HttpCode;
@@ -92,7 +92,7 @@ class Dispatcher
             // Execute handler with dependency injection
             $result = $this->executeHandler($handler, $request, $vars);
             
-            return $this->prepareResponse($result);
+            return $this->prepareResponse($result, $route);
 
         } catch (HttpException $e) {
             if ($e->getCode() === 401) {
@@ -265,15 +265,23 @@ class Dispatcher
     /**
      * Prepare response from handler result
      */
-    private function prepareResponse(mixed $result): Response
+    private function prepareResponse(mixed $result, ?Route $route = null): Response
     {
-        // If already a Response, return it
+        $forcedContentType = $route?->getForcedContentType();
+
+        // If already a Response, return it (tetap terapkan Content-Type
+        // paksa kalau route-nya ditandai, mis. lewat Router::post())
         if ($result instanceof Response) {
+            if ($forcedContentType !== null) {
+                $result->setHeader('Content-Type', $forcedContentType);
+            }
             return $result;
         }
-        
-        // If string, check if HTML or plain text
         if (is_string($result)) {
+            if ($forcedContentType !== null) {
+                return new Response($result, HttpCode::OK, ['Content-Type' => $forcedContentType]);
+            }
+
             if ($this->isHtml($result)) {
                 return Response::html($result);
             }
