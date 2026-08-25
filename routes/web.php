@@ -20,15 +20,5 @@ return function (Router $router): void {
     $router->get('/', function () {
         return Response::view(RESOURCES . "index.php");
     });
-    $router->get("/db", function () {
-        $dbs = PhxPlugins::db();
-        $dbs::initDatabase([
-            'host' => 'localhost',
-            'user' => 'root',
-            'password' => '',
-            'database' => 'akun_database',
-        ]);
-        $data = $dbs::query("SELECT * FROM tbl_user");
-        return Response::view(RESOURCES . "db.php", ["data" => $data]);
-    });
+    //require_once "external.php";
 };
