@@ -3,7 +3,11 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "PhxPlugins\\Databaseutils\\": "PhxDatabaseUtils/src/"
-        }
+            "PhxPlugins\\Databaseutils\\": "PhxDatabaseUtils/src/",
+            "PhxPlugins\\Xcsrf\\": "app-xcsrf/src/Xcsrf/"
+        },
+        "classmap": [
+            "app-xcsrf/src/Xcsrf/"
+        ]
     }
 }
