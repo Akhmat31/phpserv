@@ -4,7 +4,7 @@ namespace Routes;
 use Source\Http\Request;
 use Source\Http\Response\Response;
 use Source\Http\Routing\Router;
-use PhxPlugins;
+use PhxPlugins\Features;
 
 define("RESOURCES", __DIR__ . '/../resources/views/');
 
@@ -22,12 +22,12 @@ return function (Router $router): void {
         return Response::view(RESOURCES . "index.php");
     });
     $router->get('/csrf-test', function () {
-        $csrf = PhxPlugins::initXcsrfToken();
+        $csrf = Features::initXcsrfToken();
         return Response::view(RESOURCES . "form.php", ["csrf" => $csrf]);
     });
     $router->post("/csrf-test/process/", function (Request $request) {
         $data = $request->name("nama");
-        $csrf = PhxPlugins::initXcsrfSession();        
+        $csrf = Features::initXcsrfSession();        
         if (!$csrf->verifyRequest('contact_form')) {
             http_response_code(419);
             die('Invalid token, please try again');
