@@ -43,7 +43,7 @@ class Router
     }
 
     /**
-     * Add a POST route
+     * Add a POST route.
      */
     public function post(string $path, Closure|array|string $action): Route
     {
@@ -176,6 +176,24 @@ class Router
     }
 
     /**
+     * Normalize a path so it always has a single leading slash and
+     * never has a trailing slash (except for the root "/").
+     *
+     * This MUST be used both when a route is registered (addRoute)
+     * and when an incoming request path is matched (matchRequest).
+     * Previously only registration was normalized, so a route
+     * registered as "/foo/" was stored as "/foo", while an incoming
+     * request to "/foo/" was matched as-is and never found the route
+     * ("/foo" !== "/foo/" for FastRoute) — causing a false 404.
+     */
+    private function normalizePath(string $path): string
+    {
+        $path = trim($path, '/');
+
+        return $path === '' ? '/' : '/' . $path;
+    }
+
+    /**
      * Add a route with group attributes applied
      */
     private function addRoute(string $method, string $path, Closure|array|string $action): Route
@@ -185,7 +203,7 @@ class Router
             $path = '/' . trim($this->groupAttributes['prefix'], '/') . '/' . trim($path, '/');
         }
         
-        $path = '/' . trim($path, '/');
+        $path = $this->normalizePath($path);
         
         $route = new Route($method, $path, $action);
         
@@ -252,7 +270,7 @@ class Router
     public function matchRequest(string $method, string $path): array|false
     {
         $dispatcher = $this->getDispatcher();
-        $routeInfo = $dispatcher->dispatch($method, $path);
+        $routeInfo = $dispatcher->dispatch($method, $this->normalizePath($path));
 
         switch ($routeInfo[0]) {
             case Dispatcher::FOUND:
