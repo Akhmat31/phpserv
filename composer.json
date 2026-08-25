@@ -22,7 +22,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Source\\": "src/",
+            "Source\\": "core/Servers/",
             "Routes\\": "routes/",
             "PhxPlugins\\": "plugins/"
         },
