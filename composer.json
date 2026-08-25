@@ -22,7 +22,8 @@
     },
     "autoload": {
         "psr-4": {
-            "Source\\": "core/Servers/",
+            "Source\\": "core/Servers",
+            "Source\\Interface\\": "core/Interface",
             "Routes\\": "routes/",
             "PhxPlugins\\": "plugins/"
         },
