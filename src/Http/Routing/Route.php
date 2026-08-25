@@ -18,6 +18,7 @@ class Route
     private array $defaults = [];
     private array $middleware = [];
     private ?string $domain = null;
+    private ?string $forcedContentType = null;
 
     public function __construct(string $method, string $path, Closure|array|string $action)
     {
@@ -104,6 +105,23 @@ class Route
     {
         $this->domain = $domain;
         return $this;
+    }
+
+    /**
+     * Forcing in json temporary
+     */
+    public function forceContentType(string $contentType): self
+    {
+        $this->forcedContentType = $contentType;
+        return $this;
+    }
+
+    /**
+     * Get Content-Type
+     */
+    public function getForcedContentType(): ?string
+    {
+        return $this->forcedContentType;
     }
 
     /**
