@@ -1,4 +1,6 @@
-vendor/
+.vscode
+.agents
+vendor
 composer.lock
 node_modules
 package.json
