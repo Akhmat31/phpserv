@@ -12,7 +12,7 @@ use function FastRoute\simpleDispatcher;
  * Class Router
  * Enhanced routing class with Laravel-like features
  */
-class Router
+class Router implements RouterInterface
 {
     private RouteCollection $routes;
     private ?Dispatcher $dispatcher = null;
