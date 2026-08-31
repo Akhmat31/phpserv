@@ -223,6 +223,11 @@ class Router implements RouterInterface
         if (isset($this->groupAttributes['where'])) {
             $route->where($this->groupAttributes['where']);
         }
+
+        // Apply group middleware in declaration order.
+        if (isset($this->groupAttributes['middleware'])) {
+            $route->middleware($this->groupAttributes['middleware']);
+        }
         
         $this->routes->add($route);
         
