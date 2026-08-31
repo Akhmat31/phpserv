@@ -67,6 +67,11 @@ class RouteGroup
         if (isset($old['where']) || isset($new['where'])) {
             $merged['where'] = array_merge($old['where'] ?? [], $new['where'] ?? []);
         }
+
+        // Middleware is additive across nested groups.
+        if (isset($old['middleware']) || isset($new['middleware'])) {
+            $merged['middleware'] = array_merge($old['middleware'] ?? [], $new['middleware'] ?? []);
+        }
         
         return $merged;
     }
