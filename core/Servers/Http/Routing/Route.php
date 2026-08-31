@@ -99,6 +99,31 @@ class Route
     }
 
     /**
+     * Add middleware to this route. A [path, callable] pair applies conditionally.
+     */
+    public function middleware(callable|array $middleware): self
+    {
+        if (is_callable($middleware)) {
+            $this->middleware[] = $middleware;
+        } else {
+            foreach ($middleware as $item) {
+                if (is_callable($item) || (is_array($item) && count($item) === 2)) {
+                    $this->middleware[] = $item;
+                }
+            }
+        }
+        return $this;
+    }
+
+    /**
+     * Get middleware registered for this route.
+     */
+    public function getMiddleware(): array
+    {
+        return $this->middleware;
+    }
+
+    /**
      * Set domain constraint
      */
     public function domain(string $domain): self
