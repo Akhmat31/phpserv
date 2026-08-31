@@ -8,6 +8,7 @@ require __DIR__ . "/../vendor/autoload.php";
  * file only provides the PhxPlugins facade used across the app.
  */
 use PhxPlugins\Databaseutils\DB;
+use PhxPlugins\Stratigility\Pipeline;
 use PhxPlugins\Xcsrf\XcsrfToken;
 use Source\Cache\CacheManager;
 use Source\Encryption\EncryptionManager;
@@ -27,6 +28,11 @@ class Features
     {
         return DB::class;
     }
+    public static function pipeline(array $middleware = []): Pipeline
+    {
+        return new Pipeline($middleware);
+    }
+
     public static function initXcsrfToken(): XcsrfToken
     {
         return new XcsrfToken();
