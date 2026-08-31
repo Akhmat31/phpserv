@@ -15,6 +15,8 @@ use Closure;
 use ReflectionFunction;
 use ReflectionMethod;
 
+require_once dirname(__DIR__, 2) . '/helper/middleware.pipe.inc.php';
+
 /**
  * Class Dispatcher
  * Handles route dispatching with dependency injection
@@ -22,6 +24,9 @@ use ReflectionMethod;
 class Dispatcher
 {
     private ?string $notFoundPath = null;
+
+    /** @var callable[] */
+    private array $middleware = [];
 
     private Container $container;
 
@@ -35,6 +40,17 @@ class Dispatcher
         }
         
         $this->container = $container;
+    }
+
+    /**
+     * Register global middleware.
+     *
+     * @param callable|callable[] $middleware
+     */
+    public function middleware(callable|array $middleware): self
+    {
+        $this->middleware = array_merge($this->middleware, is_callable($middleware) ? [$middleware] : $middleware);
+        return $this;
     }
 
     /**
@@ -89,10 +105,16 @@ class Dispatcher
                 $request->setRouteParam($key, $value);
             }
 
-            // Execute handler with dependency injection
-            $result = $this->executeHandler($handler, $request, $vars);
-            
-            return $this->prepareResponse($result, $route);
+            // Middleware wraps the existing DI-powered handler and may short-circuit.
+            $middleware = middleware_for_route($this->middleware, $route->getMiddleware(), $request->getPath());
+            return middleware_run(
+                $request,
+                $middleware,
+                fn (Request $request): Response => $this->prepareResponse(
+                    $this->executeHandler($handler, $request, $vars),
+                    $route
+                )
+            );
 
         } catch (HttpException $e) {
             if ($e->getCode() === 401) {
